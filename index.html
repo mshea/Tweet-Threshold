@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<meta name="viewport" content="user-scalable=yes, width=device-width" />
+<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+<!-- Available at http://momentjs.com -->
+<script src="moment.min.js"></script>
+<title>Top Tweets</title>
+  <style type="text/css">
+	html {
+		height: 100%;
+		margin-bottom: 0.01em;
+	}
+	body {
+	max-width:35em;
+	font-family:verdana, arial, sans-serif;
+	font-size:1em;
+	margin:auto;
+    height: 100%;
+    margin-bottom: 0.01em;
+	}
+
+	div.tweet_block {
+	padding:.5em;
+	line-height: 1.5em;
+	}
+	
+	ul {
+	margin:0;
+	padding:0;
+	}
+
+	time, span.score {
+	font-size:.8em;
+	color:#555;
+	padding:.2em;
+	}
+
+	a {
+	text-decoration:none;
+	}
+
+	h2 {
+	font-size:1.4em;
+	font-weight:400;
+	margin:0;
+	padding:1em 1em 1em .4em;
+	}
+  </style>
+<script type="text/javascript">
+	myJSON = $.getJSON("tweets.js?"+ new Date().getTime(), function (json) {
+		var content = "";
+		var dateCache = "";
+		var threshold = "20" /* X retweets per 100,000 followers */
+		$.each(json, function (index, value) {
+			var createdAt = moment(new Date(value.created_at));
+			var dateString = createdAt.format("dddd, D MMMM");
+			var timeString = createdAt.format("h:mm a");
+			var score = Math.round((value.retweet_count*1.0 / value.follower_count*1.0)*100000)
+			if (score >= threshold) {
+				if (dateString != dateCache) {
+					dateCache = dateString;
+					content = content + '<h2>'+dateString+'</h2>';
+				}
+				content = content + '<div class="tweet_block"><div class="tweet '+score+'">' 
+					+ value.screen_name + ': ' + linkify(value.text) + 
+					'</div><div class="tweet_metadata"><time><a href="https://twitter.com/'
+					+value.screen_name+'/status/'+value.id_str+'">' + timeString + 
+					'</a></time>  <span class="score">Score: '+score+'</span></div></div>';
+			}
+		});
+		$("#posts").replaceWith(content);
+	});
+
+
+	function linkify(inputText) {
+		var replacedText, replacePattern1;
+		replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+		link = inputText.match(replacePattern1)
+		textSansLink = inputText.replace(link, '')
+		linkedText = '<a href="'+link+'">'+textSansLink+'</a>'
+		return linkedText;
+	}
+
+  </script>
+
+  <div id="posts"></div>
+
+
