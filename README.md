@@ -8,15 +8,17 @@ You can download the [Tweet Threshold Python script at Github](https://github.co
 
 ## What This Script Does
 
-This script reaches out to Twitter and pulls down the latest 100 tweets in JSON from your timeline. It then saves any tweets that meet a minimum threshold of 10 retweets per 100,000 followers (.01% retweet / followers) in a local SQLite3 database. From this database, the script outputs a [JSON file](http://www.json.org). The JSON file can be loaded into am HTML page that uses [JQuery](http://jquery.com) and [Moments.js](http://momentjs.com) to display the results. Here is an example in my [Tweet News page](http://mikeshea.net/twitter/).
+This script reaches out to Twitter and pulls down the latest 100 tweets in JSON from one or more authenticated timelines. It saves any tweets containing a URL to a local SQLite3 database. From this database, the script outputs a [JSON file](http://www.json.org) filtered by an algorithm based on retweets / followers with a minimum threshold so you just get the ones a lot of people thought were retweet-worthy. The JSON file can be loaded into am HTML page that uses [JQuery](http://jquery.com) and [Moments.js](http://momentjs.com) to display the results. Here is an example in my [Tweet News page](http://mikeshea.net/news/).
 
 ## How to Use This Script
 
-You'll want some experience working with Python and Javascript to run these scripts. They use a set of Python plugins to handle the authentication to Twitter for your timeline. These plugins include [httplib2](http://code.google.com/p/httplib2/), [Oauth2](https://github.com/simplegeo/python-oauth2), and [Python-twitter](https://github.com/bear/python-twitter).
+You'll want some experience working with Python and Javascript to run this script. This script uses [Tweepy](https://github.com/tweepy/tweepy) to handle the interactions with Twitter..
 
 You'll need to register this script as an application with Twitter. See [https://dev.twitter.com/apps](https://dev.twitter.com/apps) for more information.
 
-Change the parameters in "fetch_tweets.py" to your own twitter authentication codes and the local directories where you want the results. Modify the HTML file to suit your needs. Set up a scheduled event like a cronjob to run "fetch_tweets.py" once every hour.
+Change the parameters in "fetch_tweets.py" script to your own twitter authentication codes and the local directories where you want the results. Modify the index.html and daily.html files to suit your needs. Set up a scheduled event like a cronjob to run "fetch_tweets.py" once every hour.
+
+The index.html file only shows tweets from yesterday and the previous seven days. This is on purpose. There's no need to check it more than once a day, letting you focus your time and attention on the things that matter most to you.
 
 ## A Small Solution to a Growing Problem
 
