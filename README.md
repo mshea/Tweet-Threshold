@@ -10,6 +10,8 @@ You can download the [Tweet Threshold Python script at Github](https://github.co
 
 This script reaches out to Twitter and pulls down the latest 100 tweets in JSON from one or more authenticated timelines. It saves any tweets containing a URL to a local SQLite3 database. From this database, the script outputs a [JSON file](http://www.json.org) filtered by an algorithm based on retweets / followers with a minimum threshold so you just get the ones a lot of people thought were retweet-worthy. The JSON file can be loaded into am HTML page that uses [JQuery](http://jquery.com) and [Moments.js](http://momentjs.com) to display the results. Here is an example in my [Tweet News page](http://mikeshea.net/news/).
 
+This script also uses the [Jinja2 plug-in](http://jinja.pocoo.org/docs/) to create a flat HTML page of yesterday's news and the top news from the previous seven days.
+
 ## How to Use This Script
 
 You'll want some experience working with Python and Javascript to run this script. This script uses [Tweepy](https://github.com/tweepy/tweepy) to handle the interactions with Twitter..

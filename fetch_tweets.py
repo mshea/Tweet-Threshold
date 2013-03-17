@@ -11,7 +11,10 @@ PARAMS = {
 			'Fox', 
 			'CISPA',
 			'Republicans'
-		]
+		],
+	'HTML_TEMPLATE': '/usr/www/users/pl569/cgi-bin/twitter/html_template.txt',
+	'HTML_OUTPUT': '/usr/www/users/pl569/news/index.html'
+		
 }
 
 TWITTER_ACCOUNT_DATA = [
@@ -35,6 +38,8 @@ def main(TWITTER_ACCOUNT_DATA, PARAMS):
 	output_tweets = tweet_threshold.load_tweets_from_sqlite(PARAMS['DB_FILE'])
 	tweet_threshold.export_to_json(output_tweets, PARAMS['JSON_FILE'], 
 			PARAMS['SCORE_THRESHOLD'], PARAMS['BLACKLIST'])
+	tweet_threshold.build_html_page(output_tweets, PARAMS['HTML_TEMPLATE'],
+			PARAMS['HTML_OUTPUT'], PARAMS['SCORE_THRESHOLD'])
 	tweet_threshold.purge_database(PARAMS['DB_FILE'])
 
 if __name__ == "__main__":
