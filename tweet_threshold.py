@@ -77,22 +77,8 @@ def get_score(retweet_count, followers_count): # The secret sause algorithm
 		score = 0
 	return score
 
-def export_to_json(data, json_file, SCORE_THRESHOLD, BLACKLIST):
-	output = []
-	for item in data:
-		id, text, url, created_at, retweet_count, screen_name, \
-			followers_count = item
-		score = get_score(retweet_count, followers_count)
-		clean_tweet = check_blacklist(text, BLACKLIST)
-		if score >= SCORE_THRESHOLD and clean_tweet:
-			output.append({'id': id, 'text': text, 'url': url, 
-				'created_at': created_at, 'retweet_count': retweet_count,
-				'screen_name': screen_name, 'followers_count': followers_count,
-				'score': score})
-	with open(json_file, "w") as json_output_handler:
-		json_output_handler.write(json.dumps(output))
-
-def build_html_page(data, html_template, html_output_file, threshold):
+def build_html_page(data, html_template, html_output_file, threshold, 
+		whitelist):
 	scored_tweets = []
 	yesterdays_items = []
 	last_weeks_items = []
@@ -115,14 +101,16 @@ def build_html_page(data, html_template, html_output_file, threshold):
 				second=0, microsecond=0)
 		formatted_time = time.strftime('%I:%M %p', 
 				time.strptime(created_at, '%Y-%m-%dT%H:%M:%S'))
-		if score >= threshold and yesterday == created_at_object:
+		if ((score >= threshold or check_whitelist(screen_name, whitelist))
+				and yesterday == created_at_object):
 			yesterdays_items.append({'text': text.strip(), 'url': url, 
 					'score': str(int(score)), 'screen_name': screen_name, 
 					'created_at_time': formatted_time, 
 					'retweet_count': retweet_count, 
 					'followers_count': followers_count})
-		if score >= threshold and created_at_object < yesterday and \
-				last_week_item_counter > 0:
+		if ((score >= threshold or check_whitelist(screen_name, whitelist))
+				and created_at_object < yesterday 
+				and last_week_item_counter > 0):
 			last_weeks_items.append({'text': text, 'url': url, 
 					'score': str(int(score)), 'screen_name': screen_name, 
 					'created_at_time': formatted_time, 
@@ -142,6 +130,12 @@ def check_blacklist(text, BLACKLIST):
 		if phrase.strip() in text:
 			return False
 	return True
+	
+def check_whitelist(screen_name, WHITELIST):
+	for whitelist_name in WHITELIST:
+		if screen_name == whitelist_name:
+			return True
+	return False
 	
 def purge_database(db_file):
 	conn = sqlite3.connect(db_file)

@@ -2,7 +2,8 @@ import tweet_threshold
 
 PARAMS = {
 	'DB_FILE': '/path/to/your/db/tweet_threshold.sqlite',
-	'JSON_FILE': '/path/to/your/www/json/dir/data.js',
+	'HTML_TEMPLATE': '/path/to/your/www/html_template.txt',
+	'HTML_OUTPUT': '/path/to/your/www/index.html'
 	'SCORE_THRESHOLD': 50,
 	'BLACKLIST': [
 			'Congress', 
@@ -12,9 +13,11 @@ PARAMS = {
 			'CISPA',
 			'Republicans'
 		],
-	'HTML_TEMPLATE': '/usr/www/users/pl569/cgi-bin/twitter/html_template.txt',
-	'HTML_OUTPUT': '/usr/www/users/pl569/news/index.html'
-		
+	'WHITELIST': [
+			'twitter_account_you_like',
+			'twitter_account_you_like',
+			'twitter_account_you_like'
+		]
 }
 
 TWITTER_ACCOUNT_DATA = [
@@ -36,10 +39,9 @@ def main(TWITTER_ACCOUNT_DATA, PARAMS):
 		tweets = tweet_threshold.get_tweets(account)
 		tweet_threshold.export_to_sqlite(tweets, PARAMS['DB_FILE'])
 	output_tweets = tweet_threshold.load_tweets_from_sqlite(PARAMS['DB_FILE'])
-	tweet_threshold.export_to_json(output_tweets, PARAMS['JSON_FILE'], 
-			PARAMS['SCORE_THRESHOLD'], PARAMS['BLACKLIST'])
 	tweet_threshold.build_html_page(output_tweets, PARAMS['HTML_TEMPLATE'],
-			PARAMS['HTML_OUTPUT'], PARAMS['SCORE_THRESHOLD'])
+			PARAMS['HTML_OUTPUT'], PARAMS['SCORE_THRESHOLD'], 
+			PARAMS['WHITELIST'])
 	tweet_threshold.purge_database(PARAMS['DB_FILE'])
 
 if __name__ == "__main__":
