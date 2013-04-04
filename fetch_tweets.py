@@ -39,9 +39,13 @@ def main(TWITTER_ACCOUNT_DATA, PARAMS):
 		tweets = tweet_threshold.get_tweets(account)
 		tweet_threshold.export_to_sqlite(tweets, PARAMS['DB_FILE'])
 	output_tweets = tweet_threshold.load_tweets_from_sqlite(PARAMS['DB_FILE'])
-	tweet_threshold.build_html_page(output_tweets, PARAMS['HTML_TEMPLATE'],
-			PARAMS['HTML_OUTPUT'], PARAMS['SCORE_THRESHOLD'], 
-			PARAMS['WHITELIST'])
+	tweet_threshold.build_html_page(
+			output_tweets, 
+			PARAMS['HTML_TEMPLATE'],
+			PARAMS['HTML_OUTPUT'], 
+			PARAMS['SCORE_THRESHOLD'], 
+			PARAMS['WHITELIST'],
+			PARAMS['BLACKLIST'])
 	tweet_threshold.purge_database(PARAMS['DB_FILE'])
 
 if __name__ == "__main__":

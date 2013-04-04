@@ -78,7 +78,7 @@ def get_score(retweet_count, followers_count): # The secret sause algorithm
 	return score
 
 def build_html_page(data, html_template, html_output_file, threshold, 
-		whitelist):
+		whitelist, blacklist):
 	scored_tweets = []
 	yesterdays_items = []
 	last_weeks_items = []
@@ -102,7 +102,8 @@ def build_html_page(data, html_template, html_output_file, threshold,
 		formatted_time = time.strftime('%I:%M %p', 
 				time.strptime(created_at, '%Y-%m-%dT%H:%M:%S'))
 		if ((score >= threshold or check_whitelist(screen_name, whitelist))
-				and yesterday == created_at_object):
+				and yesterday == created_at_object 
+				and check_blacklist(text, blacklist)):
 			yesterdays_items.append({'text': text.strip(), 'url': url, 
 					'score': str(int(score)), 'screen_name': screen_name, 
 					'created_at_time': formatted_time, 
@@ -110,7 +111,8 @@ def build_html_page(data, html_template, html_output_file, threshold,
 					'followers_count': followers_count})
 		if ((score >= threshold or check_whitelist(screen_name, whitelist))
 				and created_at_object < yesterday 
-				and last_week_item_counter > 0):
+				and last_week_item_counter > 0
+				and check_blacklist(text, blacklist)):
 			last_weeks_items.append({'text': text, 'url': url, 
 					'score': str(int(score)), 'screen_name': screen_name, 
 					'created_at_time': formatted_time, 
