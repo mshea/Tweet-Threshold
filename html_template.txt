@@ -4,11 +4,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="news_icon.png">
 <style type="text/css">
-body { max-width:35em; font-family: verdana, sans-serif; margin:auto; background: #000; color: #eee; }
-.tweet_metadata { font-size:.8em; color:#555; padding:.2em; }
-a { text-decoration:none; color: #0bf; }
-h2 { padding:.5em; margin:0; font-size:1.4em; font-weight:normal; background: #222; }
-article { border-left: 1px #222 solid; border-right: 1px #222 solid; border-bottom: 1px #222 solid; padding:.5em; line-height: 1.5em; }
+body { max-width:35em; font-family: verdana, sans-serif; margin:auto; background: #ddd; color: #111; }
+.tweet_metadata { font-size:.8em; color:#bbb; padding:.2em; }
+a { text-decoration:none; color: #11a; }
+h2 { padding:.5em; margin:0; font-size:1.4em; font-weight:normal; background: #ccc; color: #fff}
+article { background: #fff; border-left: 1px #ccc solid; border-right: 1px #ccc solid; border-bottom: 1px #ccc solid; padding:.5em; line-height: 1.5em; }
 </style>
 <h2>Yesterday's Top News</h2>
 {% for tweet in yesterdays_items %}<article><div class="tweet">{{ tweet.screen_name }}: <a href="{{ tweet.url }}">{{ tweet.text }}</a></div><div class="tweet_metadata">{{ tweet.created_at_time }} Score: {{ tweet.score }} r/ts: {{tweet.retweet_count}}</div></article>
