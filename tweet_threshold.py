@@ -6,6 +6,8 @@ import time
 import datetime
 import math
 import jinja2
+import PyRSS2Gen
+
 
 class Tweets (object):
     def __init__(self, account_data, params):
@@ -20,13 +22,13 @@ class Tweets (object):
             try:
                 url = tweet.entities['urls'][0]['expanded_url']
             except IndexError:
-                url = False            
+                url = False
             if (url is not False):
                 self.tweets.append((
                         tweet.id_str,
                         self.extract_urls(tweet.text),
                         url,
-                        str(tweet.created_at).replace(' ','T'),
+                        str(tweet.created_at).replace(' ', 'T'),
                         tweet.retweet_count,
                         tweet.user.screen_name,
                         tweet.user.followers_count
@@ -38,12 +40,12 @@ class Tweets (object):
         tdb.purge()
 
     def extract_urls(self, text):
-        text = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|'\
-                '[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+','', 
+        text = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|'
+                '[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '',
                 text).strip()
-        text = re.sub('\:$','',text)    
+        text = re.sub('\:$', '', text)
         return text
-        
+
 class TweetDatabase (object):
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
@@ -51,11 +53,11 @@ class TweetDatabase (object):
         
     def create(self):
         try:
-            self.c.execute('''CREATE TABLE tweets 
+            self.c.execute('''CREATE TABLE tweets
                                     ( id int not null unique,
-                                    text text, 
-                                    url text, 
-                                    created_at text, 
+                                    text text,
+                                    url text,
+                                    created_at text,
                                     retweet_count int,
                                     screen_name text,
                                     followers_count int);''')
@@ -82,6 +84,7 @@ class TweetDatabase (object):
         self.c.execute('vacuum;')
         self.conn.commit()
         return True
+
     
 class FilteredTweets (object):
     def __init__(self, params):
@@ -109,7 +112,7 @@ class FilteredTweets (object):
                         'score': score
                         })
             self.filtered_tweets = sorted(self.filtered_tweets, key=lambda 
-            		tup: tup['score'], reverse=True)
+                    tup: tup['score'], reverse=True)
 
     def check_blacklist(self, text):
         for phrase in self.blacklist:
@@ -153,9 +156,9 @@ class FilteredTweets (object):
                         hour=0, minute=0, second=0, microsecond=0)
         return filter_date
     
-class WebPage (object):
+class Output (object):
 
-    def build(self, yesterdays_items, last_weeks_items, params):
+    def build_webpage(self, yesterdays_items, last_weeks_items, params):
         with open(params['html_template']) as f: 
             template = jinja2.Template(f.read())
         self.html_output = template.render(yesterdays_items = yesterdays_items, 
@@ -164,10 +167,42 @@ class WebPage (object):
             f.write(self.html_output.encode('utf-8'))
         return True
         
+    def build_rss(self, items, output_file):
+        rss_items = []
+        sorted_items = sorted(items, key=lambda 
+                    tup: tup['created_at'], 
+                    reverse=True)
+        for item in sorted_items:
+            rss_items.append(PyRSS2Gen.RSSItem(
+                    title = '%s: %s - Score: %s' % (
+                        item['screen_name'],
+                        item['text'],
+                        item['score']),
+                    link = item['url'],
+                    pubDate = datetime.datetime.strptime(
+                            item['created_at'], '%Y-%m-%dT%H:%M:%S')))
+        rss = PyRSS2Gen.RSS2(
+            title = 'Mike\'s News',
+            link = 'http://mikeshea.net/news/',
+            description = 'Mike\'s personal news filtered by Tweet Threshold.',
+            lastBuildDate = datetime.datetime.now(),
+            items = rss_items
+        )
+        with open(output_file, 'w') as f:
+            rss.write_xml(f)
+        return True
+        
+    def build_json(self, items, output_file):
+        with open(output_file, 'w') as f:
+            f.write(json.dumps(items))
+        return True
+        
 def main(accounts, params):
     for account in accounts:
         remote_tweets = Tweets(account, params)
         remote_tweets.save()
     tweets = FilteredTweets(params)
-    wp = WebPage()
-    wp.build(tweets.load_by_date(0,1), tweets.load_by_date(1,6), params)
+    wp = Output()
+    wp.build_webpage(tweets.load_by_date(0,1), tweets.load_by_date(1,6), params)
+    wp.build_rss(tweets.load_by_date(0,1), params['rss_output_file'])
+    wp.build_json(tweets.load_by_date(0,7), params['json_output_file'])
