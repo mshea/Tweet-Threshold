@@ -100,9 +100,9 @@ class FilteredTweets (object):
         for tweet in self.tweets:
             score = self.build_score(tweet['retweet_count'],
                                      tweet['followers_count'])
-            if (self.check_blacklist(tweet['text']) and (
-                    score > params['threshold'] or
-                    self.check_whitelist(tweet['screen_name']))):
+            if self.check_whitelist(tweet['screen_name']):
+            	score = '1000'
+            if self.check_blacklist(tweet['text']):
                 tweet['score'] = score
                 self.filtered_tweets.append(tweet)
             self.filtered_tweets = sorted(self.filtered_tweets, key=lambda
@@ -130,7 +130,7 @@ class FilteredTweets (object):
             score = 0
         return int(score)
 
-    def load_by_date(self, close, far):
+    def load_by_date(self, close, far, params):
         self.date_filtered_tweets = []
         for tweet in self.filtered_tweets:
             self.created_at_object = datetime.datetime.strptime(
@@ -138,7 +138,7 @@ class FilteredTweets (object):
             if (self.build_date(close) >
                     self.created_at_object > self.build_date(far)):
                 self.date_filtered_tweets.append(tweet)
-        return self.date_filtered_tweets
+        return self.date_filtered_tweets[0:params['threshold']]
 
     def build_date(self, day_delta):
         return (datetime.datetime.today() -
@@ -148,11 +148,10 @@ class FilteredTweets (object):
 
 class WebPage (object):
 
-    def build(self, yesterdays_items, last_weeks_items, params):
+    def build(self, yesterdays_items, params):
         with open(params['html_template']) as f:
             template = jinja2.Template(f.read())
-        self.html_output = template.render(yesterdays_items=yesterdays_items,
-                                           last_weeks_items=last_weeks_items)
+        self.html_output = template.render(yesterdays_items=yesterdays_items)
         with open(params['html_output'], 'w') as f:
             f.write(self.html_output.encode('utf-8'))
 
@@ -163,4 +162,4 @@ def main(accounts, params):
         remote_tweets.save()
     tweets = FilteredTweets(params)
     wp = WebPage()
-    wp.build(tweets.load_by_date(0, 1), tweets.load_by_date(1, 6), params)
+    wp.build(tweets.load_by_date(0, 1, params), params)

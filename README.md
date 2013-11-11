@@ -8,7 +8,7 @@ You can [download the script](https://github.com/mshea/Tweet-Threshold) and run 
 
 ## What This Script Does
 
-This script reaches out to Twitter and pulls down the latest 100 tweets in JSON from one or more authenticated timelines. It saves any tweets containing a URL to a local SQLite3 database. From this database, the script outputs am HTML page filtered by an algorithm based on retweets / followers with a minimum threshold so you just get the ones a lot of people thought were retweet-worthy. Here is an example in my [Tweet News page](http://mikeshea.net/news/).
+This script reaches out to Twitter and pulls down the latest 100 tweets in JSON from one or more authenticated timelines. It saves any tweets containing a URL to a local SQLite3 database. From this database, the script outputs am HTML page filtered by an algorithm based on retweets / followers with a total number of returned tweets, called the threshold, in order of the score. Here is an example in my [Tweet News page](http://mikeshea.net/news/).
 
 ## How to Use This Script
 
@@ -18,7 +18,7 @@ To run this script, you'll need to register this script as an application with T
 
 Change the parameters in "fetch_tweets.py" script to your own twitter authentication codes and the local directories where you want the results. Modify the html_template.txt template to suit your needs. Set up a scheduled event like a cronjob to run "fetch_tweets.py" once every hour.
 
-The index.html file only shows tweets from yesterday and the previous seven days. This is on purpose. Who really needs up-t-the-minute news these days? Relax and spend some time in a park for God's sake.
+The index.html file only shows tweets from yesterday. This is on purpose. Who really needs up-t-the-minute news these days? Relax and spend some time in a park for God's sake.
 
 ## A Small Solution to a Growing Problem
 
