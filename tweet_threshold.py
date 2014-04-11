@@ -84,7 +84,7 @@ class TweetDatabase (object):
     def purge(self):
         self.c.execute('''delete from tweets
                           where datetime(created_at) <
-                          date('now','-8 day');''')
+                          date('now','-30 day');''')
         self.c.execute('vacuum;')
         self.conn.commit()
         return True
@@ -101,7 +101,7 @@ class FilteredTweets (object):
             score = self.build_score(tweet['retweet_count'],
                                      tweet['followers_count'])
             if self.check_whitelist(tweet['screen_name']):
-            	score = '1000'
+            	score = 0.90
             if self.check_blacklist(tweet['text']):
                 tweet['score'] = score
                 self.filtered_tweets.append(tweet)
@@ -121,14 +121,15 @@ class FilteredTweets (object):
         return False
 
     def build_score(self, retweet_count, followers_count):
-        retweet_count -= 1
         if retweet_count > 2:
-            retweet_score = pow(retweet_count, 1.5)
-            raw_score = (retweet_score / followers_count)*100000
-            score = round(math.log(raw_score, 1.09))
+            numerator = float(retweet_count)
+            denominator = followers_count
+            score = (numerator/denominator)*10000
+            score = round(math.log(score)/3,2)
+            if score > .99: score = .99
         else:
             score = 0
-        return int(score)
+        return score
 
     def load_by_date(self, close, far, params):
         self.date_filtered_tweets = []
