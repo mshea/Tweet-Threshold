@@ -68,5 +68,5 @@ padding : 0.5em;
 <h1>Yesterday's News</h1>
 <p>Parsed from Twitter with love by <a href="http://mikeshea.net/tweet_threshold.html">Tweet Threshold</a>.</p>
 </header>
-{% for tweet in yesterdays_items %}<article><div class="tweet">{{ tweet.screen_name }}: <a href="{{ tweet.url }}">{{ tweet.text }}</a></div><div class="tweet_metadata">{{ tweet.created_at_time }} Score: {{ tweet.score }} r/ts: {{tweet.retweet_count}}</div></article>
+{% for tweet in yesterdays_items %}<article><div class="tweet">{{ tweet.screen_name }}: <a href="{{ tweet.url }}">{{ tweet.text }}</a></div><div class="tweet_metadata">{{ tweet.created_at_time }} {{tweet.retweet_count}} rts, {{ tweet.score }} rts per 10k</div></article>
 {% endfor %}
