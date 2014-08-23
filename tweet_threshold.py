@@ -101,10 +101,11 @@ class FilteredTweets (object):
             score = self.build_score(tweet['retweet_count'],
                                      tweet['followers_count'])
             if self.check_whitelist(tweet['screen_name']):
-            	score = 0.90
+            	score = 500
             if self.check_blacklist(tweet['text']):
                 tweet['score'] = score
-                self.filtered_tweets.append(tweet)
+                if score > 0:
+                    self.filtered_tweets.append(tweet)
             self.filtered_tweets = sorted(self.filtered_tweets, key=lambda
                                           tup: tup['score'], reverse=True)
 
@@ -124,9 +125,9 @@ class FilteredTweets (object):
         if retweet_count > 2:
             numerator = float(retweet_count)
             denominator = followers_count
-            score = (numerator/denominator)*10000
-            score = round(math.log(score)/3,2)
-            if score > .99: score = .99
+            score = round(((numerator/denominator)*10000),2)
+            # score = round(math.log(score)/3,2)
+            # if score > .99: score = .99
         else:
             score = 0
         return score
