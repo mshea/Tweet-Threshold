@@ -126,8 +126,6 @@ class FilteredTweets (object):
             numerator = float(retweet_count)
             denominator = followers_count
             score = round(((numerator/denominator)*10000),2)
-            # score = round(math.log(score)/3,2)
-            # if score > .99: score = .99
         else:
             score = 0
         return score
